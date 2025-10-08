@@ -1,7 +1,8 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { TbiComponent } from './tbi/tbi.component';
 import { ImageStorageComponent } from './image-storage/image-storage.component';
+import { TbiComponent } from './tbi/tbi.component';
+import { UserListComponent } from './user-list/user-list.component';
 
 const routes: Routes = [
   {
@@ -11,6 +12,9 @@ const routes: Routes = [
   {
     path: 'image-storage',
     component: ImageStorageComponent,
+  },{
+    path: 'user-list',
+component: UserListComponent,
   }
 ];
 

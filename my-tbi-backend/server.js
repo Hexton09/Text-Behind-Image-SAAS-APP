@@ -91,7 +91,60 @@ const authMiddleware = async (req, res, next) => {
     }
 };
 
-// === 8. CONFIGURE MULTER FOR IN-MEMORY STORAGE ===
+// === 8. ROLE MANAGEMENT MIDDLEWARE ===
+const isSuperAdmin = async (req, res, next) => {
+    try {
+        if (req.user.role !== 'superadmin') {
+            return res.status(403).json({ message: 'Access denied. Superadmin rights required.' });
+        }
+        next();
+    } catch (error) {
+        res.status(500).json({ message: 'Error checking superadmin status.' });
+    }
+};
+
+// === 9. ROLE MANAGEMENT ROUTES ===
+app.post('/api/users/set-role', authMiddleware, isSuperAdmin, async (req, res) => {
+    try {
+        const { uid, role } = req.body;
+
+        if (!uid || !['admin', 'superadmin', 'user'].includes(role)) {
+            return res.status(400).json({ message: 'Invalid user ID or role.' });
+        }
+
+        // Update role in MongoDB
+        const user = await User.findOneAndUpdate(
+            { uid },
+            { role },
+            { new: true }
+        );
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found.' });
+        }
+
+        // Set custom claims in Firebase
+        await admin.auth().setCustomUserClaims(uid, { role });
+
+        res.json({ message: 'User role updated successfully', user });
+    } catch (error) {
+        console.error('Error updating user role:', error);
+        res.status(500).json({ message: 'Error updating user role.' });
+    }
+});
+
+// Get all users (superadmin only)
+app.get('/api/users', authMiddleware, isSuperAdmin, async (req, res) => {
+    try {
+        const users = await User.find({}, { _id: 0, __v: 0 });
+        res.json(users);
+    } catch (error) {
+        console.error('Error fetching users:', error);
+        res.status(500).json({ message: 'Error fetching users.' });
+    }
+});
+
+// === 10. CONFIGURE MULTER FOR IN-MEMORY STORAGE ===
 const storage = multer.memoryStorage();
 const upload = multer({
     storage: storage,

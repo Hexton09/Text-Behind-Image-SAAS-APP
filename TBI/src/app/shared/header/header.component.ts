@@ -20,6 +20,7 @@ import { getDownloadURL, getStorage, ref, uploadBytes } from 'firebase/storage';
 import { filter } from 'rxjs/operators';
 import { v4 as uuidv4 } from 'uuid';
 import { AuthService } from '../../login/auth-service.service';
+import { UserRole } from '../../login/user.model';
 import { LoginPopupService } from '../../services/login-pop-up.service';
 import { ToasterService } from '../../services/toaster.service';
 import { BottomBarService } from './bottom-bar.service';
@@ -39,6 +40,7 @@ import { BottomBarService } from './bottom-bar.service';
 })
 export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
   private observer!: IntersectionObserver;
+  userrole: UserRole = UserRole.USER;
 
   scrollToGuide() {
     this.selectedTab = 'Guide';
@@ -132,6 +134,15 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.route.events.subscribe(() => {
       this.isCollapsed = this.route.url === '/text-behind-image';
+    });
+
+    // Subscribe to current user changes to get role updates
+    this.authService.currentUser$.subscribe(user => {
+      if (user) {
+        this.userrole = user.role || UserRole.USER;
+      } else {
+        this.userrole = UserRole.USER;
+      }
     });
   }
 

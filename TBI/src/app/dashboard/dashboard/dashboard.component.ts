@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { Observable } from 'rxjs';
 import { AuthService } from '../../login/auth-service.service';
+import { User, UserRole } from '../../login/user.model';
 import { LoginPopupService } from './../../services/login-pop-up.service';
 
 @Component({
@@ -10,8 +12,10 @@ import { LoginPopupService } from './../../services/login-pop-up.service';
   styleUrl: './dashboard.component.scss',
 })
 export class DashboardComponent implements OnInit {
-  showLoginPopup = false;
   showScrollTop = false;
+  user$!: Observable<User | undefined>;
+  UserRole = UserRole; // Make enum available in template
+isLoading = true;
 
   constructor(private router: Router, private authService: AuthService, public loginPopupService: LoginPopupService) {
     // Initialize scroll event listener
@@ -21,28 +25,23 @@ export class DashboardComponent implements OnInit {
   }
 
   ngOnInit() {
-    // ngOnInit logic
+    setTimeout(() => {
+      this.isLoading = false;
+    }, 3000);
+    this.isLoggedIn();
+    this.user$ = this.authService.currentUser$;
+    // Subscribe to user to handle role-based access
+    this.user$.subscribe(user => {
+      if (!user) {
+        this.router.navigate(['/home']);
+      }
+    });
   }
 
-  isLoggedIn(): boolean {
-    return this.authService.isLoggedIn();
+    //login check
+    isLoggedIn(): boolean {
+     return this.authService.isLoggedIn();
   }
-
-
-  closeLoginPopup() {
-    this.showLoginPopup = false;
-  }
-
-  navigateToLogin() {
-    this.showLoginPopup = false;
-    this.loginPopupService.open(false);
-  }
-
-  navigateToRegister() {
-    this.showLoginPopup = false;
-    this.loginPopupService.open(true);
-  }
-
 
   // Handle TBI navigation with login check
   scrollToTop() {

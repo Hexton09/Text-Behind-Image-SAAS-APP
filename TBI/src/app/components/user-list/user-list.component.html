@@ -1,1 +1,29 @@
-<p>user-list works!</p>
+<ng-container *ngIf="currentUser$ | async as currentUser">
+    <h1>User Management</h1>
+    <p *ngIf="currentUser?.role !== 'superadmin'">You do not have permission to view this page.</p>
+
+    <div *ngIf="currentUser?.role === 'superadmin'">
+        <table>
+            <thead>
+                <tr>
+                    <th>Display Name</th>
+                    <th>Email</th>
+                    <th>Current Role</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let user of allUsers$ | async">
+                    <td>{{ user.displayName || 'No Name' }}</td>
+                    <td>{{ user.email }}</td>
+                    <td>{{ user.role }}</td>
+                    <td>
+                        <button *ngIf="user.role === 'user'" (click)="promoteToAdmin(user)">
+                            Promote to Admin
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</ng-container>

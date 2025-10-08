@@ -1,12 +1,12 @@
-import { Toast, ToasterService } from './../../services/toaster.service';
 import { Component, OnInit, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { AuthService } from '../auth-service.service';
-import { User } from '../user.model';
 import {
   LoginPopupService,
   LoginPopupState,
 } from '../../services/login-pop-up.service';
+import { AuthService } from '../auth-service.service';
+import { User, UserRole } from '../user.model';
+import { ToasterService } from './../../services/toaster.service';
 
 @Component({
   selector: 'app-login',
@@ -82,7 +82,9 @@ export class LoginComponent implements OnInit {
     this.authService
       .signIn(this.email, this.password)
       .then((res) => {
-        this.router.navigate(['/home']);
+        this.router.navigate(['/home']).then(() => {
+          window.location.reload(); // Refresh after navigation
+        });
       })
       .catch((err) => {
 
@@ -129,9 +131,25 @@ export class LoginComponent implements OnInit {
             .then(() => {
               this.authService.getCurrentUser().subscribe((updatedUser) => {
                 if (updatedUser) {
-                  this.authService.setCurrentUser(updatedUser as User);
+                  const mappedUser: User = {
+                    uid: updatedUser.uid,
+                    email: updatedUser.email,
+                    displayName: updatedUser.displayName,
+                    photoURL: updatedUser.photoURL,
+                    emailVerified: updatedUser.emailVerified,
+                    phoneNumber: updatedUser.phoneNumber,
+                    isAnonymous: updatedUser.isAnonymous,
+                    role: UserRole.USER, // New users always get 'user' role
+                    metadata: {
+                      creationTime: updatedUser.metadata.creationTime!,
+                      lastSignInTime: updatedUser.metadata.lastSignInTime!,
+                    },
+                    refreshToken: updatedUser.refreshToken,
+                  };
+                  this.authService.setCurrentUser(mappedUser);
                 }
                 this.router.navigate(['/home']);
+                window.location.reload(); // Refresh after navigation
               });
             });
         }
@@ -152,10 +170,26 @@ export class LoginComponent implements OnInit {
       .then((res) => {
         this.authService.getCurrentUser().subscribe((user) => {
           if (user) {
-            this.authService.setCurrentUser(user as unknown as User);
+            const mappedUser: User = {
+              uid: user.uid,
+              email: user.email,
+              displayName: user.displayName,
+              photoURL: user.photoURL,
+              emailVerified: user.emailVerified,
+              phoneNumber: user.phoneNumber,
+              isAnonymous: user.isAnonymous,
+              role: UserRole.USER, // Google login users get 'user' role
+              metadata: {
+                creationTime: user.metadata.creationTime!,
+                lastSignInTime: user.metadata.lastSignInTime!,
+              },
+              refreshToken: user.refreshToken,
+            };
+            this.authService.setCurrentUser(mappedUser);
           }
         });
         this.router.navigate(['/home']);
+        window.location.reload(); // Refresh after navigation
       })
       .catch((err) => this.Toast.show('Error signing in with Google.','error'));
   }
@@ -167,10 +201,26 @@ export class LoginComponent implements OnInit {
       .then((res) => {
         this.authService.getCurrentUser().subscribe((user) => {
           if (user) {
-            this.authService.setCurrentUser(user as unknown as User);
+            const mappedUser: User = {
+              uid: user.uid,
+              email: user.email,
+              displayName: user.displayName,
+              photoURL: user.photoURL,
+              emailVerified: user.emailVerified,
+              phoneNumber: user.phoneNumber,
+              isAnonymous: user.isAnonymous,
+              role: UserRole.USER, // GitHub login users get 'user' role
+              metadata: {
+                creationTime: user.metadata.creationTime!,
+                lastSignInTime: user.metadata.lastSignInTime!,
+              },
+              refreshToken: user.refreshToken,
+            };
+            this.authService.setCurrentUser(mappedUser);
           }
         });
         this.router.navigate(['/home']);
+        window.location.reload(); // Refresh after navigation
       })
       .catch((err) => this.Toast.show('Error signing in with GitHub.','error'));
   }
