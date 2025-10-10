@@ -67,22 +67,11 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
   profileOpen = signal(false);
   profilePopUpOpen = signal(false);
   showFallback: boolean = false;
-  isMenuOpen: boolean = false;
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
-
-  toggleMenu() {
-    this.isMenuOpen = !this.isMenuOpen;
-    this.closeProfile();
-  }
 
   // Close menu and profile when clicking outside
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent) {
-    // Handle menu dropdown
-    const menuContainer = document.querySelector('.menu-container');
-    if (menuContainer && !menuContainer.contains(event.target as Node)) {
-      this.isMenuOpen = false;
-    }
 
     // Handle profile dropdown
     const profileButton = document.querySelector('.profile-button');
@@ -218,6 +207,12 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
     this.selectedTab = '';
     this.closeProfile();
     this.route.navigate(['/about-us']);
+  }
+
+  navigateToGallery() {
+    this.selectedTab = 'Gallery';
+    this.closeProfile();
+    this.route.navigate(['/text-behind-image/image-storage']);
   }
 
   /**

@@ -1,6 +1,6 @@
 <div class="w-full flex items-center justify-center">
   <div
-    class="p-2 w-[80%] my-4 border border-gray-100 rounded-full shadow-sm flex items-center justify-between bg-white">
+    class="p-2 w-[75%] my-4 border border-gray-200 rounded-full shadow-sm flex items-center justify-between bg-white">
     <div class="flex gap-2 items-center cursor-pointer" (click)="goToHome()">
       <img src="brush.svg" alt="Logo" class="h-10 rounded-full" />
       <div class="flex flex-col leading-tight">
@@ -13,71 +13,37 @@
       </div>
     </div>
 
-    <div class="flex gap-2 items-center">
+    <div class="flex gap-3 items-center ">
       <button (click)="goToHome()" [ngClass]="{
-          'bg-blue-800 ': route.url === '/home',
-          'bg-blue-600': route.url !== '/home'
-        }" class="text-white text-md px-6 py-2 custom-rounded2 cursor-pointer hover:animate-pulse transition-all">
+          'nav-ghost-button-active': route.url === '/home',
+          'nav-ghost-button': route.url !== '/home'
+        }" class="  text-[17px]   font-semibold px-2 py-1  cursor-pointer hover:animate-pulse transition-all">
         Home
       </button>
 
       <button (click)="navigateToAboutUs()" [ngClass]="{
-          'bg-blue-800 ': route.url === '/about-us',
-          'bg-gradient-to-r from-blue-600 to-purple-600':
+          'nav-ghost-button-active': route.url === '/about-us',
+          'nav-ghost-button':
             route.url !== '/about-us'
-        }" class="text-white text-md px-6 py-2 rounded-md cursor-pointer hover:animate-pulse transition-all">
+        }" class="  text-[17px]  font-semibold px-2 py-1  cursor-pointer hover:animate-pulse transition-all">
         About Us
       </button>
 
-      <div class="relative menu-container">
-        <button [ngClass]="{
-            'bg-purple-800': isMenuOpen,
-            'bg-purple-600': !isMenuOpen,
-            'custom-rounded': isLoggedIn()
-          }" (click)="toggleMenu()"
-          class="text-white text-md px-6 py-2 rounded-md cursor-pointer hover:animate-pulse transition-all">
-          Menu
-        </button>
+      <button (click)="navigateToGallery()" [ngClass]="{
+                'nav-ghost-button-active': route.url === '/text-behind-image/image-storage',
+                'nav-ghost-button':
+                  route.url !== '/text-behind-image/image-storage',
+                  'mr-18': isLoggedIn()
+              }"
+        class="  text-[17px] font-semibold px-2 py-1  cursor-pointer hover:animate-pulse transition-all">
+        Gallery
+      </button>
 
-        <!-- Dropdown Menu -->
-        <div *ngIf="isMenuOpen"
-          class="absolute z-50 top-15 -right-13 w-[300px] bg-white border border-[#c8c8c8] shadow-lg rounded-lg"
-          role="menu" aria-orientation="vertical" aria-labelledby="menu-button">
-          <div class="" role="none">
-            <a class="flex items-center pl-8 py-2.5 rounded-t-lg menu" role="menuitem"
-              (click)="scrollToGuide(); toggleMenu()">
-              <img src="guid.svg" alt="Guide" class="h-6 mr-[8px]" /> Guide
-            </a>
 
-            <button routerLink="/text-behind-image" class="flex items-center pl-8 py-2.5 menu w-full" role="menuitem">
-              <img src="text.svg" alt="Text Behind Image" class="h-6 mr-[8px]" /> Text Behind Image
-            </button>
-            <button routerLink="/text-behind-image/image-storage" class="flex items-center pl-8 py-2.5 menu w-full"
-              role="menuitem">
-              <img src="gallery.svg" alt="Gallery" class="h-6 mr-[8px]" /> Gallery
-            </button>
-            <a href="#" class="flex items-center pl-8 py-2.5 menu" role="menuitem">
-              <img src="service-h.svg" alt="Plan & Billing" class="h-5 pl-[2px] mr-[11px]" /> Plan & Billing
-            </a>
-            <a href="#" class="flex items-center pl-8 py-2.5 menu" role="menuitem">
-              <img src="scan.svg" alt="Object Removal" class="h-5 mr-[11px]" /> Object Removal
-            </a>
-            <a href="#" class="flex items-center pl-8 py-2.5 menu" role="menuitem">
-              <img src="image.svg" alt="Image Restore" class="h-5 mr-[11px]" /> Image Restore
-            </a>
-            <a href="#" class="flex items-center pl-8 py-2.5 menu" role="menuitem">
-              <img src="stars.svg" alt="Generative Fill" class="h-5 mr-[11px]" /> Generative Fill
-            </a>
-            <a href="#" class="flex items-center pl-8 py-2.5 menu rounded-b-lg" role="menuitem">
-              <img src="filter.svg" alt="Object Recolor" class="h-5 mr-[11px]" /> Object Recolor
-            </a>
-          </div>
-        </div>
-      </div>
 
       @if(!isLoggedIn()){
       <button (click)="goToLogin()"
-        class="bg-purple-600 text-white text-md px-6 py-2 cursor-pointer hover:animate-pulse custom-rounded transition-all">
+        class="rounded-full bg-[#000] text-white text-[16px] mr-1 font-semibold px-4 py-1.5  cursor-pointer hover:animate-pulse transition-all">
         Sign Up
       </button>
       }@else{

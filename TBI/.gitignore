@@ -14,6 +14,7 @@
 .env.*
 !.env.example
 !src/environments/*.example.ts
+set-admin.js
 
 # Node
 /node_modules

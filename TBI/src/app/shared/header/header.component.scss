@@ -38,3 +38,43 @@
   }
 
 
+    .nav-ghost-button{
+    background-color: white;
+    color: #155dfc;
+    transition: all 0.3s ease-in-out;
+    cursor: pointer;
+
+    &:hover {
+      color: #6e11b0;
+    
+    }
+  }
+
+  
+    .nav-ghost-button-active{
+    background-color: white;
+    border-bottom: 2px solid #6e11b0;
+    color: #6e11b0;
+    transition: all 0.3s ease-in-out;
+    cursor: pointer;
+
+    &:hover {
+      color: #155dfc;
+    
+    }
+  }
+
+    .nav-ghost-button-signup{
+    background-color: #000;
+    color: white;
+    border-radius: 3rem;
+    transition: all 0.3s ease-in-out;
+    cursor: pointer;
+
+    &:hover {
+      color: #6e11b0;
+    
+    }
+  }
+
+
