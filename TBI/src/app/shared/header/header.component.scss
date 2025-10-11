@@ -41,11 +41,13 @@
     .nav-ghost-button{
     background-color: white;
     color: #155dfc;
+    opacity: 90%;
     transition: all 0.3s ease-in-out;
     cursor: pointer;
 
     &:hover {
       color: #6e11b0;
+      opacity: 100%;
     
     }
   }

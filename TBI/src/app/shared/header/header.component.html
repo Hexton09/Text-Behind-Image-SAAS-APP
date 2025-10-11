@@ -1,6 +1,6 @@
 <div class="w-full flex items-center justify-center">
   <div
-    class="p-2 w-[75%] my-4 border border-gray-200 rounded-full shadow-sm flex items-center justify-between bg-white">
+    class="p-2 w-[80%] my-4 border border-gray-200 rounded-full shadow-sm flex items-center justify-between bg-white">
     <div class="flex gap-2 items-center cursor-pointer" (click)="goToHome()">
       <img src="brush.svg" alt="Logo" class="h-10 rounded-full" />
       <div class="flex flex-col leading-tight">
@@ -17,7 +17,7 @@
       <button (click)="goToHome()" [ngClass]="{
           'nav-ghost-button-active': route.url === '/home',
           'nav-ghost-button': route.url !== '/home'
-        }" class="  text-[17px]   font-semibold px-2 py-1  cursor-pointer hover:animate-pulse transition-all">
+        }" class="  text-[16px]   font-semibold px-2 py-1  cursor-pointer transition-all">
         Home
       </button>
 
@@ -25,19 +25,29 @@
           'nav-ghost-button-active': route.url === '/about-us',
           'nav-ghost-button':
             route.url !== '/about-us'
-        }" class="  text-[17px]  font-semibold px-2 py-1  cursor-pointer hover:animate-pulse transition-all">
+        }" class="  text-[16px]  font-semibold px-2 py-1  cursor-pointer  transition-all">
         About Us
+      </button>
+
+      <button (click)="navigateToAboutUs()" [ngClass]="{
+                'nav-ghost-button-active': route.url === '/about-us',
+                'nav-ghost-button':
+                  route.url !== '/about-us'
+              }" class="  text-[16px]  font-semibold px-2 py-1  cursor-pointer  transition-all">
+        Subscription
       </button>
 
       <button (click)="navigateToGallery()" [ngClass]="{
                 'nav-ghost-button-active': route.url === '/text-behind-image/image-storage',
                 'nav-ghost-button':
                   route.url !== '/text-behind-image/image-storage',
-                  'mr-18': isLoggedIn()
+                  'mr-28': isLoggedIn()
               }"
-        class="  text-[17px] font-semibold px-2 py-1  cursor-pointer hover:animate-pulse transition-all">
+        class="  text-[16px] font-semibold px-2 py-1  cursor-pointer  transition-all">
         Gallery
       </button>
+
+      
 
 
 
