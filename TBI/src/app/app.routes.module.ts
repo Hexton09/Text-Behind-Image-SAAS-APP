@@ -25,6 +25,14 @@ export const routes: Routes = [
     redirectTo: '/home',
     pathMatch: 'full',
   },
+  {
+    path: 'payment',
+    loadChildren: () =>
+      import('./payment/payment.module').then((m) => m.PaymentModule),
+    canActivate: [AuthGuard],
+  },
+  
+  
 ];
 
 @NgModule({

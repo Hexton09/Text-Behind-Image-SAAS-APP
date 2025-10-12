@@ -220,6 +220,12 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
     this.route.navigate(['/text-behind-image/image-storage']);
   }
 
+  navigateToPayment() {
+    this.selectedTab = 'Payment';
+    this.closeProfile();
+    this.route.navigate(['/payment']);
+  }
+
   /**
    * Opens the login popup with the 'Sign Up' form active.
    */
@@ -307,5 +313,7 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
   onToggleClick() {
     this.bottomBarService.toggleFromHeader(); // use new toggle logic
   }
+
+  
 }
 

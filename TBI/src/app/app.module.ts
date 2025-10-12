@@ -16,6 +16,7 @@ import { DashboardModule } from './dashboard/dashboard.module';
 import { LoginModule } from './login/login.module';
 import { SharedModule } from './shared/shared.module';
 import { AuthInterceptor } from './services/auth.interceptor';
+import { PaymentModule } from './payment/payment.module';
 
 @NgModule({
   declarations: [AppComponent],
@@ -31,6 +32,7 @@ import { AuthInterceptor } from './services/auth.interceptor';
     SharedModule,
     LoginModule,
     DashboardModule,
+    PaymentModule,
     ComponentsModule,
     AngularFireModule.initializeApp(environment.firebaseConfig),
     AngularFireAuthModule,

@@ -1,25 +1,47 @@
-<div
-    class="bg-gradient-to-br from-gray-50 to-indigo-100 border border-gray-200 rounded-2xl shadow-2xl p-8 max-w-5xl w-full mx-4 relative">
-    <!-- Close button -->
+<div class="bg-white border border-gray-200 rounded-2xl shadow-2xl p-8 max-w-5xl w-full mx-4 relative">
     <button (click)="closePopup()"
-        class="absolute top-4 right-4 bg-gray-200 hover:bg-gray-300 cursor-pointer p-2 rounded-full z-10">
+        class="absolute top-4 right-4 bg-gray-50 hover:bg-gray-300 cursor-pointer p-2 rounded-full z-10">
         <img src="cross.svg" alt="close" class="w-5 h-5" />
     </button>
 
-    <!-- Popup content -->
     <div class="flex flex-col items-center text-center">
-        <h2 class="text-3xl font-extrabold text-gray-800 mb-2">You're Out of Credits!</h2>
-        <p class="text-gray-600 mb-8 max-w-2xl">Your free daily credits have been used. Upgrade to a premium plan for
-            more
-            credits and exclusive features, or wait until tomorrow for your free credits to refresh.</p>
+        <div class="flex flex-row items-end justify-between w-full mb-18">
+            <div class="flex flex-col  items-start justify-center w-[60%]">
+                <h2 class="text-3xl font-extrabold text-[#444] mb-2 ">Plans & Pricing</h2>
+                <p class="text-[#666] text-start  text-xs">Your free daily credits have been used. Upgrade to a premium plan
+                    for
+                    more
+                    credits and exclusive features, or wait until tomorrow for your free credits to refresh.</p>
+            </div>
+
+
+            <div class="relative flex items-center w-64 p-1 bg-gray-100 rounded-full">
+                <input type="checkbox" (change)="onBillingToggle()" [checked]="isYearly" id="billing-toggle"
+                    class="hidden peer">
+
+                <span
+                    class="absolute top-1/2 left-1 -translate-y-1/2 h-[85%] w-[calc(50%-4px)] bg-white shadow-md rounded-full transition-transform duration-300 ease-in-out peer-checked:translate-x-full"
+                    aria-hidden="true"></span>
+
+                <label for="billing-toggle"
+                    class="flex-1 text-center py-1.5 rounded-full cursor-pointer z-10 font-semibold transition-colors duration-300"
+                    [ngClass]="{'text-indigo-600': !isYearly, 'text-gray-500': isYearly}">Monthly</label>
+
+                <label for="billing-toggle"
+                    class="flex-1 text-center py-1.5 rounded-full cursor-pointer z-10 font-semibold transition-colors duration-300"
+                    [ngClass]="{'text-indigo-600': isYearly, 'text-gray-500': !isYearly}">Yearly</label>
+            </div></div>
+
+
+        
+
 
         <div class="w-full grid grid-cols-1 md:grid-cols-3 gap-6">
 
-            <!-- Card 1: Free Plan -->
-            <div class="flex flex-col bg-white border-2 border-indigo-200 rounded-xl p-6 shadow-lg">
-                <h3 class="text-xl font-bold text-gray-800">Free Plan</h3>
-                <p class="text-gray-500 mt-1 mb-4 text-sm">Perfect for getting started</p>
-                <p class="text-4xl font-extrabold text-gray-900 mb-4">Free</p>
+            <div class="flex flex-col bg-white border-2 border-indigo-200 rounded-xl p-6 shadow-lg hover:scale-105 transition-transform duration-300">
+                <h3 class="text-xl font-extrabold text-[#444]">Free Plan</h3>
+                <p class="text-[#666] mt-1 mb-4 text-sm">Perfect for getting started</p>
+                <p class="text-4xl font-extrabold text-[#444] mb-4">Free</p>
                 <ul class="space-y-3 text-left text-gray-600 mb-6">
                     <li class="flex items-center gap-3">
                         <svg class="w-5 h-5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor"
@@ -60,20 +82,27 @@
                         <span>No watermark on images</span>
                     </li>
                 </ul>
-                <button class="w-full py-2 mt-auto font-semibold text-indigo-600 bg-indigo-100 rounded-lg">Your Current
+                <button class="ghost-button w-full py-2 mt-auto font-semibold ">Your Current
                     Plan</button>
             </div>
 
-            <!-- Card 2: Premium Subscription -->
             <div
-                class="relative flex flex-col bg-indigo-700 text-white rounded-2xl p-6 shadow-2xl transform scale-105 z-10">
+                class="relative flex flex-col bg-[#155dfc] text-white rounded-2xl p-6 shadow-2xl hover:scale-105 transition-transform duration-300 z-10">
                 <div
-                    class="absolute top-0 right-6 -translate-y-1/2 px-3 py-1 text-sm font-semibold text-white bg-pink-500 rounded-full">
-                    MOST POPULAR</div>
-                <h3 class="text-xl font-bold">Premium</h3>
-                <p class="text-indigo-200 mt-1 mb-4 text-sm">For creators and professionals</p>
-                <p class="text-4xl font-extrabold mb-4">$10<span
-                        class="text-base font-medium text-indigo-200">/month</span>
+                    class="absolute top-0 right-4 -translate-y-1/2 px-3 py-1 text-sm font-semibold border border-gary-100 text-white bg-red-500 rounded-full">
+                    Most Popular</div>
+
+                <div class="absolute top-1 -left-[1px] text-center">
+                    <span
+                        class="px-4 py-2 text-sm font-semibold text-green-700 bg-green-100 border border-green-200 rounded-tl-2xl rounded-br-2xl transition-opacity duration-300"
+                        [class.opacity-0]="!isYearly">Save ₹200</span>
+                </div>
+
+                <h3 class="text-xl font-extrabold">Premium</h3>
+                <p class="text-gray-100 mt-1 mb-4 text-sm">For creators and professionals</p>
+                <p class="text-4xl font-extrabold mb-4">
+                    ₹<span>{{ premiumPrice }}</span><span class="text-base font-medium text-indigo-200">{{
+                        premiumBillingCycle }}</span>
                 </p>
                 <ul class="space-y-3 text-left text-indigo-100 mb-6">
                     <li class="flex items-center gap-3">
@@ -82,7 +111,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7">
                             </path>
                         </svg>
-                        <span>20 credits per day</span>
+                        <span>{{ premiumCredits }} credits per day</span>
                     </li>
                     <li class="flex items-center gap-3">
                         <svg class="w-5 h-5 text-green-400 flex-shrink-0" fill="none" stroke="currentColor"
@@ -109,24 +138,20 @@
                         <span>No watermark on images</span>
                     </li>
                 </ul>
-                <button
-                    class="w-full py-2 mt-auto font-semibold text-indigo-700 bg-white rounded-lg hover:bg-gray-200 transition">Upgrade
+                <button class="ghost-button w-full py-2 mt-auto font-semibold  bg-white  transition">Upgrade
                     to Premium</button>
             </div>
 
-            <!-- Card 3: Coming Soon -->
-            <div class="flex flex-col bg-gray-100 border border-gray-200 rounded-xl p-6 shadow-lg text-gray-500">
-                <h3 class="text-xl font-bold text-gray-600">Enterprise</h3>
-                <p class="text-gray-400 mt-1 mb-4 text-sm">For large teams and businesses</p>
+            <div class="flex flex-col bg-gray-100 border border-gray-200 rounded-xl p-6 shadow-lg text-gray-500 hover:scale-105 transition-transform duration-300">
+                <h3 class="text-xl font-extrabold text-[#888]">Super Saving</h3>
+                <p class="text-[#888] mt-1 mb-4 text-sm">Carry unused credits to next month</p>
                 <div class="flex-grow flex flex-col items-center justify-center">
-                    <p class="text-2xl font-bold text-gray-700">Coming Soon</p>
-                    <p class="text-sm mt-2">Advanced features for power users are on the way!</p>
+                    <p class="text-4xl font-extrabold text-[#999]">Coming Soon</p>
+                    <p class="text-sm text-[#999] mt-2">Advanced features for power users are on the way!</p>
                 </div>
-                <button
-                    class="w-full py-2 mt-auto font-semibold text-gray-500 bg-gray-200 rounded-lg cursor-not-allowed">Notify
+                <button class="w-full py-2 mt-auto font-semibold ghost-button transition cursor-not-allowed">Notify
                     Me</button>
             </div>
         </div>
-
     </div>
 </div>

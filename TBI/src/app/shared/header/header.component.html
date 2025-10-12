@@ -28,9 +28,9 @@
         About Us
       </button>
 
-      <button (click)="navigateToAboutUs()" [ngClass]="{
-          'nav-ghost-button-active': route.url === '/subscription',
-          'nav-ghost-button': route.url !== '/subscription'
+      <button (click)="navigateToPayment()" [ngClass]="{
+          'nav-ghost-button-active': route.url === '/payment',
+          'nav-ghost-button': route.url !== '/payment'
         }" class="text-[16px] font-semibold px-2 py-1 cursor-pointer transition-all">
         Subscription
       </button>
@@ -46,7 +46,7 @@
       </button>
 
       <!-- === CREDIT DISPLAY === -->
-      <div *ngIf="isLoggedIn() && currentUser" class="flex items-center gap-2 bg-gray-100 px-4 py-2 rounded-full" title="credits left">
+      <div *ngIf="isLoggedIn() && currentUser" class="flex items-center gap-2 border border-gray-200 bg-gray-100 px-4 py-[7px] rounded-full" title="credits left">
         <img src="credit.svg" alt="Credits" class="h-5 w-5">
         <!-- Make sure you have a credit icon in assets -->
         <span class="font-bold text-[16px] text-[#444]">{{ currentUser.credits }} <span class="font-medium text-sm text-[#777]">Credits</span></span>

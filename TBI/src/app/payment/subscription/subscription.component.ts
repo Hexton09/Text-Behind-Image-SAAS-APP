@@ -9,11 +9,32 @@ import { SubscriptionService } from '../subscription.service';
 })
 export class SubscriptionComponent {
   showCreditExhaustedPopup = false;
+  isYearly = false; // Tracks the state of the billing toggle
+
+  // Properties for the premium plan to make them dynamic
+  premiumPrice = 100;
+  premiumBillingCycle = '/month';
+  premiumCredits = 20;
 
   constructor(private subscriptionService: SubscriptionService) {
     this.subscriptionService.creditExhaustedPopup$.subscribe(
       show => this.showCreditExhaustedPopup = show
     );
+  }
+
+  // Handles the logic when the toggle is clicked
+  onBillingToggle() {
+    this.isYearly = !this.isYearly;
+
+    if (this.isYearly) {
+      this.premiumPrice = 1000;
+      this.premiumBillingCycle = '/year';
+      this.premiumCredits = 25;
+    } else {
+      this.premiumPrice = 100;
+      this.premiumBillingCycle = '/month';
+      this.premiumCredits = 20;
+    }
   }
 
   closePopup() {
