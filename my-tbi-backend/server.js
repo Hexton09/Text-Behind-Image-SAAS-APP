@@ -5,6 +5,7 @@
  * This version stores the actual image binary data directly within
  * each MongoDB document. It includes endpoints for upload, fetch,
  * search, DELETE, and is resilient to old data formats.
+ * It also includes a daily credit system for users.
  * =================================================================
  */
 
@@ -32,6 +33,7 @@ try {
 // === 3. INITIALIZE APP & DEFINE CONSTANTS ===
 const app = express();
 const PORT = process.env.PORT || 3000;
+const DAILY_CREDIT_ALLOWANCE = 4;
 
 // === 4. SETUP MIDDLEWARE ===
 app.use(cors());
@@ -55,6 +57,8 @@ const UserSchema = new mongoose.Schema({
     uid: { type: String, required: true, unique: true },
     email: { type: String, required: true },
     role: { type: String, enum: ['user', 'admin', 'superadmin'], default: 'user' },
+    credits: { type: Number, default: DAILY_CREDIT_ALLOWANCE },
+    lastCreditReset: { type: Date, default: Date.now },
     createdAt: { type: Date, default: Date.now }
 });
 const User = mongoose.model('User', UserSchema);
@@ -69,7 +73,7 @@ const ImageSchema = new mongoose.Schema({
 });
 const Image = mongoose.model('Image', ImageSchema);
 
-// === 7. AUTHENTICATION MIDDLEWARE ===
+// === 7. AUTHENTICATION & CREDIT REFRESH MIDDLEWARE ===
 const authMiddleware = async (req, res, next) => {
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -83,6 +87,16 @@ const authMiddleware = async (req, res, next) => {
             user = new User({ uid: decodedToken.uid, email: decodedToken.email });
             await user.save();
         }
+
+        const today = new Date();
+        today.setUTCHours(0, 0, 0, 0);
+
+        if (user.lastCreditReset < today) {
+            user.credits = DAILY_CREDIT_ALLOWANCE;
+            user.lastCreditReset = new Date();
+            await user.save();
+        }
+
         req.user = user;
         next();
     } catch (error) {
@@ -103,29 +117,18 @@ const isSuperAdmin = async (req, res, next) => {
     }
 };
 
-// === 9. ROLE MANAGEMENT ROUTES ===
+// === 9. ROLE & CREDIT MANAGEMENT ROUTES ===
 app.post('/api/users/set-role', authMiddleware, isSuperAdmin, async (req, res) => {
     try {
         const { uid, role } = req.body;
-
         if (!uid || !['admin', 'superadmin', 'user'].includes(role)) {
             return res.status(400).json({ message: 'Invalid user ID or role.' });
         }
-
-        // Update role in MongoDB
-        const user = await User.findOneAndUpdate(
-            { uid },
-            { role },
-            { new: true }
-        );
-
+        const user = await User.findOneAndUpdate({ uid }, { role }, { new: true });
         if (!user) {
             return res.status(404).json({ message: 'User not found.' });
         }
-
-        // Set custom claims in Firebase
         await admin.auth().setCustomUserClaims(uid, { role });
-
         res.json({ message: 'User role updated successfully', user });
     } catch (error) {
         console.error('Error updating user role:', error);
@@ -133,7 +136,6 @@ app.post('/api/users/set-role', authMiddleware, isSuperAdmin, async (req, res) =
     }
 });
 
-// Get all users (superadmin only)
 app.get('/api/users', authMiddleware, isSuperAdmin, async (req, res) => {
     try {
         const users = await User.find({}, { _id: 0, __v: 0 });
@@ -144,6 +146,33 @@ app.get('/api/users', authMiddleware, isSuperAdmin, async (req, res) => {
     }
 });
 
+// --- NEW ROUTE: To get the current user's full profile ---
+app.get('/api/users/me', authMiddleware, (req, res) => {
+    // The authMiddleware already fetched the user and attached it to req.user
+    res.json(req.user);
+});
+
+
+// --- UPDATED ROUTE: To deduct one credit ---
+app.post('/api/users/use-credit', authMiddleware, async (req, res) => {
+    try {
+        if (req.user.role === 'user' && req.user.credits > 0) {
+            const updatedUser = await User.findOneAndUpdate(
+                { uid: req.user.uid },
+                { $inc: { credits: -1 } },
+                { new: true } // Return the updated document
+            );
+            return res.status(200).json({ credits: updatedUser.credits });
+        }
+        // Admins/Superadmins don't have credits deducted, just return current state
+        res.status(200).json({ credits: req.user.credits });
+    } catch (error) {
+        console.error('Error deducting credit:', error);
+        res.status(500).json({ message: 'Failed to deduct credit.' });
+    }
+});
+
+
 // === 10. CONFIGURE MULTER FOR IN-MEMORY STORAGE ===
 const storage = multer.memoryStorage();
 const upload = multer({
@@ -151,8 +180,9 @@ const upload = multer({
     limits: { fileSize: 16 * 1024 * 1024 }
 });
 
-// === 9. DEFINE API ROUTES ===
+// === 11. IMAGE API ROUTES ===
 
+// This route now only saves the final edited image to the gallery. It does NOT use credits.
 app.post('/api/images/upload', authMiddleware, upload.single('image'), async (req, res) => {
     if (!req.file) {
         return res.status(400).json({ message: 'No file was uploaded.' });
@@ -166,16 +196,14 @@ app.post('/api/images/upload', authMiddleware, upload.single('image'), async (re
     });
     try {
         await newImage.save();
-        res.status(201).json({ message: 'File uploaded successfully' });
+        res.status(201).json({ message: 'File saved to gallery successfully' });
     } catch (error) {
         console.error('Error saving image to database:', error);
         res.status(500).json({ message: 'Error saving image to database.', error });
     }
 });
 
-// --- MODIFIED --- Helper function is now more robust
 const formatImagesForResponse = (images) => {
-    // Filter out any documents that don't have image data before trying to map them
     return images.filter(img => img.imageData && img.contentType).map(img => {
         const imageBase64 = img.imageData.toString('base64');
         return {
@@ -240,7 +268,7 @@ app.delete('/api/images/:id', authMiddleware, async (req, res) => {
     }
 });
 
-// === 10. START THE SERVER ===
+// === 12. START THE SERVER ===
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
 });

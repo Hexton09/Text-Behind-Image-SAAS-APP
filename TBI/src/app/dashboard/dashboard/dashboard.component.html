@@ -1,10 +1,22 @@
 @if (isLoading) {
 <div
-  class="absolute w-full h-full left-0 -top-1 z-40  flex flex-col items-center justify-center bg-white/80 backdrop-blur-sm text-slate-700 p-8 text-center rounded-b-lg">
-  @if (isLoading) { <div class="loader"></div> }
-  <p class="mt-4 font-semibold">Loding . . .</p>
+  class="absolute insert-0 w-full h-full left-0 -top-1 z-40  flex flex-row items-center justify-center bg-white/80 backdrop-blur-sm text-slate-700 p-8 text-center rounded-b-lg">
+  @if (isLoading) {
+  
+<!-- From Uiverse.io by abrahamcalsin -->
+<div class="dot-spinner">
+  <div class="dot-spinner__dot"></div>
+  <div class="dot-spinner__dot"></div>
+  <div class="dot-spinner__dot"></div>
+  <div class="dot-spinner__dot"></div>
+  <div class="dot-spinner__dot"></div>
+  <div class="dot-spinner__dot"></div>
+  <div class="dot-spinner__dot"></div>
+  <div class="dot-spinner__dot"></div>
+</div> }
+  <p class="ml-6 font-semibold animate-pulse">Loading . . . </p>
 </div>
-}
+}@else{
 @if ((user$ | async)?.role === UserRole.SUPERADMIN) {
 <app-admin></app-admin>
 }@else {
@@ -61,4 +73,4 @@
     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 10l7-7m0 0l7 7m-7-7v18" />
   </svg>
 </button>
-}
+}}

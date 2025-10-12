@@ -32,7 +32,6 @@ export class ImageStorageComponent implements OnInit {
     this.imageService.getImages().subscribe(
       (data) => {
         this.images = data;
-        console.log('Images loaded successfully');
         this.isLoading = false;
       },
       (error) => {
@@ -113,6 +112,7 @@ export class ImageStorageComponent implements OnInit {
 
   openImageViewer(image: any): void {
     this.viewingImage = image;
+
   }
 
   closeImageViewer(): void {

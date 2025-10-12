@@ -1,0 +1,132 @@
+<div
+    class="bg-gradient-to-br from-gray-50 to-indigo-100 border border-gray-200 rounded-2xl shadow-2xl p-8 max-w-5xl w-full mx-4 relative">
+    <!-- Close button -->
+    <button (click)="closePopup()"
+        class="absolute top-4 right-4 bg-gray-200 hover:bg-gray-300 cursor-pointer p-2 rounded-full z-10">
+        <img src="cross.svg" alt="close" class="w-5 h-5" />
+    </button>
+
+    <!-- Popup content -->
+    <div class="flex flex-col items-center text-center">
+        <h2 class="text-3xl font-extrabold text-gray-800 mb-2">You're Out of Credits!</h2>
+        <p class="text-gray-600 mb-8 max-w-2xl">Your free daily credits have been used. Upgrade to a premium plan for
+            more
+            credits and exclusive features, or wait until tomorrow for your free credits to refresh.</p>
+
+        <div class="w-full grid grid-cols-1 md:grid-cols-3 gap-6">
+
+            <!-- Card 1: Free Plan -->
+            <div class="flex flex-col bg-white border-2 border-indigo-200 rounded-xl p-6 shadow-lg">
+                <h3 class="text-xl font-bold text-gray-800">Free Plan</h3>
+                <p class="text-gray-500 mt-1 mb-4 text-sm">Perfect for getting started</p>
+                <p class="text-4xl font-extrabold text-gray-900 mb-4">Free</p>
+                <ul class="space-y-3 text-left text-gray-600 mb-6">
+                    <li class="flex items-center gap-3">
+                        <svg class="w-5 h-5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7">
+                            </path>
+                        </svg>
+                        <span>4 credits free every day</span>
+                    </li>
+                    <li class="flex items-center gap-3">
+                        <svg class="w-5 h-5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7">
+                            </path>
+                        </svg>
+                        <span>Download your images</span>
+                    </li>
+                    <li class="flex items-center gap-3">
+                        <svg class="w-5 h-5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7">
+                            </path>
+                        </svg>
+                        <span>2GB of image storage</span>
+                    </li>
+                    <li class="flex items-center gap-3 text-gray-400">
+                        <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                        <span>Full effect access</span>
+                    </li>
+                    <li class="flex items-center gap-3 text-gray-400">
+                        <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                        <span>No watermark on images</span>
+                    </li>
+                </ul>
+                <button class="w-full py-2 mt-auto font-semibold text-indigo-600 bg-indigo-100 rounded-lg">Your Current
+                    Plan</button>
+            </div>
+
+            <!-- Card 2: Premium Subscription -->
+            <div
+                class="relative flex flex-col bg-indigo-700 text-white rounded-2xl p-6 shadow-2xl transform scale-105 z-10">
+                <div
+                    class="absolute top-0 right-6 -translate-y-1/2 px-3 py-1 text-sm font-semibold text-white bg-pink-500 rounded-full">
+                    MOST POPULAR</div>
+                <h3 class="text-xl font-bold">Premium</h3>
+                <p class="text-indigo-200 mt-1 mb-4 text-sm">For creators and professionals</p>
+                <p class="text-4xl font-extrabold mb-4">$10<span
+                        class="text-base font-medium text-indigo-200">/month</span>
+                </p>
+                <ul class="space-y-3 text-left text-indigo-100 mb-6">
+                    <li class="flex items-center gap-3">
+                        <svg class="w-5 h-5 text-green-400 flex-shrink-0" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7">
+                            </path>
+                        </svg>
+                        <span>20 credits per day</span>
+                    </li>
+                    <li class="flex items-center gap-3">
+                        <svg class="w-5 h-5 text-green-400 flex-shrink-0" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7">
+                            </path>
+                        </svg>
+                        <span>Full effect access</span>
+                    </li>
+                    <li class="flex items-center gap-3">
+                        <svg class="w-5 h-5 text-green-400 flex-shrink-0" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7">
+                            </path>
+                        </svg>
+                        <span>4GB of image storage</span>
+                    </li>
+                    <li class="flex items-center gap-3">
+                        <svg class="w-5 h-5 text-green-400 flex-shrink-0" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7">
+                            </path>
+                        </svg>
+                        <span>No watermark on images</span>
+                    </li>
+                </ul>
+                <button
+                    class="w-full py-2 mt-auto font-semibold text-indigo-700 bg-white rounded-lg hover:bg-gray-200 transition">Upgrade
+                    to Premium</button>
+            </div>
+
+            <!-- Card 3: Coming Soon -->
+            <div class="flex flex-col bg-gray-100 border border-gray-200 rounded-xl p-6 shadow-lg text-gray-500">
+                <h3 class="text-xl font-bold text-gray-600">Enterprise</h3>
+                <p class="text-gray-400 mt-1 mb-4 text-sm">For large teams and businesses</p>
+                <div class="flex-grow flex flex-col items-center justify-center">
+                    <p class="text-2xl font-bold text-gray-700">Coming Soon</p>
+                    <p class="text-sm mt-2">Advanced features for power users are on the way!</p>
+                </div>
+                <button
+                    class="w-full py-2 mt-auto font-semibold text-gray-500 bg-gray-200 rounded-lg cursor-not-allowed">Notify
+                    Me</button>
+            </div>
+        </div>
+
+    </div>
+</div>

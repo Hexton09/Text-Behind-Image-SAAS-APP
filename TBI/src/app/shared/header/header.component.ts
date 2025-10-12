@@ -20,7 +20,7 @@ import { getDownloadURL, getStorage, ref, uploadBytes } from 'firebase/storage';
 import { filter } from 'rxjs/operators';
 import { v4 as uuidv4 } from 'uuid';
 import { AuthService } from '../../login/auth-service.service';
-import { UserRole } from '../../login/user.model';
+import { User, UserRole } from '../../login/user.model';
 import { LoginPopupService } from '../../services/login-pop-up.service';
 import { ToasterService } from '../../services/toaster.service';
 import { BottomBarService } from './bottom-bar.service';
@@ -41,6 +41,7 @@ import { BottomBarService } from './bottom-bar.service';
 export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
   private observer!: IntersectionObserver;
   userrole: UserRole = UserRole.USER;
+  currentUser: User | undefined;
 
   scrollToGuide() {
     this.selectedTab = 'Guide';
@@ -67,11 +68,22 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
   profileOpen = signal(false);
   profilePopUpOpen = signal(false);
   showFallback: boolean = false;
+  isMenuOpen: boolean = false;
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
+
+  toggleMenu() {
+    this.isMenuOpen = !this.isMenuOpen;
+    this.closeProfile();
+  }
 
   // Close menu and profile when clicking outside
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent) {
+    // Handle menu dropdown
+    const menuContainer = document.querySelector('.menu-container');
+    if (menuContainer && !menuContainer.contains(event.target as Node)) {
+      this.isMenuOpen = false;
+    }
 
     // Handle profile dropdown
     const profileButton = document.querySelector('.profile-button');
@@ -104,10 +116,12 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
     private loginPopupService: LoginPopupService // Injected the service
   ) {
     this.authService.currentUser$.subscribe((user) => {
+      this.currentUser = user;
       if (user) {
         this.userImg = user.photoURL || '';
         this.userName = user.displayName || '';
         this.userEmail = user.email || '';
+        this.userrole = user.role || UserRole.USER;
         const date = new Date(user.metadata.lastSignInTime || '');
         this.lastSignInTime = date.toDateString();
         const creationdate = new Date(user.metadata.creationTime || '');
@@ -123,15 +137,6 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.route.events.subscribe(() => {
       this.isCollapsed = this.route.url === '/text-behind-image';
-    });
-
-    // Subscribe to current user changes to get role updates
-    this.authService.currentUser$.subscribe(user => {
-      if (user) {
-        this.userrole = user.role || UserRole.USER;
-      } else {
-        this.userrole = UserRole.USER;
-      }
     });
   }
 
@@ -303,3 +308,4 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
     this.bottomBarService.toggleFromHeader(); // use new toggle logic
   }
 }
+

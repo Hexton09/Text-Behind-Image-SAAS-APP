@@ -5,12 +5,12 @@
     </div>
 
     @if(!isLoading){
-    <div class=" bg-white  border border-[#c8c8c8] rounded-2xl p-6 transition-all">
+    <div class=" bg-white rounded-2xl transition-all">
 
       <div class="bg-white pb-3 flex justify-between items-center mb-2 transition-all">
-        <div class="flex gap-2 w-[50%]">
+        <div class="flex gap-2 w-[50%] bg-gray-100 p-2 rounded-lg">
           <input type="text" [(ngModel)]="searchTerm" (keyup.enter)="onSearch()" placeholder="Search by name or tag..."
-            class="w-full px-4 py-1.5 bg-gray-50 border text-[15px] border-[#c8c8c8] rounded-lg focus:ring-none focus:outline-none focus:border-[#333] transition-colors text-gray-900 placeholder-gray-400">
+            class="w-full px-4 py-1.5 bg-white border text-[15px] border-[#c8c8c8] rounded-lg focus:ring-none focus:outline-none focus:border-[#333] transition-colors text-gray-900 placeholder-gray-400">
           <button (click)="onSearch()"
             class="font-bold p-1.5 px-2 !rounded-lg fill-button transition-transform transform hover:scale-[1.03] active:scale-[0.97]">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
@@ -19,16 +19,17 @@
                 d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
             </svg>
           </button>
-          <button
+          <button (click)="clearSearch()" [disabled]="!searchTerm.trim()"
+            [ngClass]="{ 'opacity-20 cursor-default': !searchTerm.trim() }"
             class="flex items-center justify-center ghost-button !rounded-lg px-4 py-1.5 font-semibold text-[15px] transition-transform transform hover:scale-[1.03] active:scale-[0.97]">
             Clear
           </button>
         </div>
 
-        <div class="flex items-center border border-gray-200 rounded-lg p-0.5 bg-gray-100">
+        <div class="flex items-center border border-gray-200 rounded-lg p-1 bg-gray-100">
           <button (click)="setViewMode('list')"
             [ngClass]="{'bg-white shadow': viewMode === 'list', 'text-gray-500 hover:text-gray-800': viewMode !== 'list'}"
-            class="p-1 rounded-md transition-all" title="List View">
+            class="p-1.5 rounded-md transition-all cursor-pointer" title="List View">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
               xmlns="http://www.w3.org/2000/svg">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
@@ -36,7 +37,7 @@
           </button>
           <button (click)="setViewMode('grid')"
             [ngClass]="{'bg-white shadow': viewMode === 'grid', 'text-gray-500 hover:text-gray-800': viewMode !== 'grid'}"
-            class="p-1 rounded-md transition-all" title="Grid View">
+            class="p-1.5 rounded-md transition-all cursor-pointer" title="Grid View">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
               xmlns="http://www.w3.org/2000/svg">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -90,9 +91,9 @@
 
         <div *ngIf="viewMode === 'list'" class="space-y-3">
           <div *ngFor="let image of images" (click)="openImageViewer(image)"
-            class="flex items-center gap-4 p-3 border border-gray-200 rounded-lg shadow-sm hover:bg-gray-50 transition-all cursor-pointer">
+            class="flex items-center gap-4 p-3 border border-gray-100 rounded-lg shadow-sm transition-transform duration-300 hover:scale-101 hover:shadow-xl cursor-pointer transition-all cursor-pointer">
             <img [src]="image.imageData" [alt]="image.description"
-              class="w-24 h-24 object-cover rounded-md flex-shrink-0">
+              class=" h-14 object-cover rounded-md flex-shrink-0">
             <div class="flex-grow">
               <p class="font-bold text-gray-800 truncate" [title]="image.originalName">{{ image.originalName }}</p>
               <p class="text-sm text-gray-600 truncate" [title]="image.description">{{ image.description || 'No
@@ -135,28 +136,55 @@
         </div>
       </ng-template>
     </div>
-    }@else {
-    <div class="flex justify-center items-center h-64">
-      <div class="loader"></div>
-      <p class="ml-4 text-gray-600">Loading images...</p>
+    }
+    @else {
+    <div class="flex justify-center items-center h-74 mt-10">
+      <div class="dot-spinner">
+        <div class="dot-spinner__dot"></div>
+        <div class="dot-spinner__dot"></div>
+        <div class="dot-spinner__dot"></div>
+        <div class="dot-spinner__dot"></div>
+        <div class="dot-spinner__dot"></div>
+        <div class="dot-spinner__dot"></div>
+        <div class="dot-spinner__dot"></div>
+        <div class="dot-spinner__dot"></div>
+      </div>
+      <p class="ml-4 text-gray-600">Loading images . . .</p>
     </div>}
   </div>
 </div>
 
 <div *ngIf="viewingImage" (click)="closeImageViewer()"
-  class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4 animate-fade-in">
-  <div (click)="$event.stopPropagation()" class="relative bg-white p-4 rounded-lg shadow-2xl max-w-4xl max-h-[90vh]">
-    <button (click)="closeImageViewer()"
-      class="absolute -top-3 -right-3 bg-red-600 text-white rounded-full p-2 z-10 hover:bg-red-700 transition">
-      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-      </svg>
-    </button>
+  class="fixed inset-0 bg-black/85 flex items-center justify-center z-500 p-4 animate-fade-in">
+  <div (click)="$event.stopPropagation()" class="flex flex-col bg-white p-4 rounded-4xl shadow-2xl max-w-6xl max-h-[85vh]">
+
     <img [src]="viewingImage.imageData" [alt]="viewingImage.description"
-      class="object-contain max-w-full max-h-[85vh] rounded">
-    <div class="absolute bottom-4 left-4 bg-black bg-opacity-60 text-white p-2 rounded">
-      <p class="font-bold">{{ viewingImage.originalName }}</p>
-      <p class="text-sm">{{ viewingImage.description }}</p>
+      class="object-contain max-w-full max-h-[74vh] rounded-2xl">
+    <div class="flex justify-between items-center text-[#444] pt-2 rounded">
+      <div>
+      <p class="font-semibold text-md">{{ viewingImage.originalName }}</p>
+      <p class="text-xs text-gray-500">{{ viewingImage.description }}</p></div>
+      <div class="flex gap-2">
+        <button (click)="$event.stopPropagation(); downloadImage(viewingImage)" title="Download"
+          class="cursor-pointer p-2 bg-green-100 text-green-700 rounded-full hover:bg-green-300 transition-colors">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+          </svg>
+        </button>
+        <button (click)="deleteImage(viewingImage._id, $event)" title="Delete"
+          class="cursor-pointer p-2 bg-red-100 text-red-700 rounded-full hover:bg-red-300 transition-colors">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+            </path>
+          </svg>
+        </button>
+            <button (click)="closeImageViewer()"
+              class=" p-1.5 px-4 cursor-pointer border border-[#c8c8c8] text-gray-700 rounded-full hover:bg-gray-200 transition">
+              close
+            </button>
+      </div>
     </div>
   </div>
 </div>

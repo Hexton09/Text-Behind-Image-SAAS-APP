@@ -6,6 +6,9 @@ import { AuthService } from '../../login/auth-service.service';
 import { ImageStorageService } from '../../services/image-storage.service';
 import { LoginPopupService } from '../../services/login-pop-up.service';
 import { ToasterService } from '../../services/toaster.service';
+import { User } from '../../login/user.model';
+import { UserService } from '../../services/user.service'; // --- IMPORT UserService ---
+import { SubscriptionService } from '../../payment/subscription.service';
 
 export interface GoogleFont {
   name: string;
@@ -45,8 +48,10 @@ export interface CloudinaryEffect {
   styleUrl: './tbi.component.scss',
 })
 export class TbiComponent implements OnInit {
-//login check 
+  //login check 
   showLoginPopup = false;
+  currentUser: User | undefined;
+  showCreditExhaustedPopup = false;
 
 
   // Element References
@@ -106,11 +111,21 @@ export class TbiComponent implements OnInit {
   selectedEffect: CloudinaryEffect | null = null;
   effectIntensity = 100;
 
-  constructor(private http: HttpClient, private sanitizer: DomSanitizer, 
-    private imageService: ImageStorageService, private toast: ToasterService, private authService: AuthService, public loginPopupService: LoginPopupService) {
+  constructor(
+    private http: HttpClient, 
+    private sanitizer: DomSanitizer, 
+    private imageService: ImageStorageService, 
+    private toast: ToasterService, 
+    private authService: AuthService, 
+    public loginPopupService: LoginPopupService,
+    private subscriptionService: SubscriptionService,
+    private userService: UserService // --- INJECT UserService ---
+  ) {
     window.addEventListener('scroll', () => {
       this.showScrollTop = window.scrollY > 400;
     });
+
+    this.authService.currentUser$.subscribe(user => this.currentUser = user);
 
     if (!this.cloudName || !this.uploadPreset || this.cloudName === 'YOUR_CLOUD_NAME') {
       this.messageText = 'Please configure your Cloudinary credentials in the environment file.';
@@ -120,6 +135,10 @@ export class TbiComponent implements OnInit {
   ngOnInit(): void {
     this.loadGoogleFonts();
     this.loadCloudinaryEffects();
+    
+    this.subscriptionService.creditExhaustedPopup$.subscribe(
+  (show: boolean) => this.showCreditExhaustedPopup = show
+);
   }
 
   //login check
@@ -297,8 +316,6 @@ export class TbiComponent implements OnInit {
   }
 
   onFileSelected(event: Event): void {
-
-
     if(!this.isLoggedIn()) {
       this.showLoginPopup = true;
     }
@@ -313,6 +330,13 @@ export class TbiComponent implements OnInit {
       alert('Cloudinary credentials are not configured.');
       return;
     }
+
+    if (this.currentUser && this.currentUser.credits <= 0 && this.currentUser.role === 'user') {
+        this.subscriptionService.showCreditExhaustedPopup();
+        console.log("Credit exhausted popup shown");
+        return;
+    }
+    
     const reader = new FileReader();
     reader.onload = (e: any) => {
       const img = new Image();
@@ -349,8 +373,20 @@ export class TbiComponent implements OnInit {
         this.originalForegroundImageUrl = `https://res.cloudinary.com/${this.cloudName}/image/upload/e_background_removal,f_png/v${version}/${publicId}.png`;
 
         this.rebuildImageUrls();
-        
         this.isImageUploaded = true;
+        
+        // --- DEDUCT CREDIT AFTER SUCCESSFUL UPLOAD ---
+        this.userService.deductCredit().subscribe({
+          next: (creditResponse) => {
+            this.authService.updateLocalCredits(creditResponse.credits);
+            this.toast.show('Credit used! Image is ready to edit.', 'success');
+          },
+          error: (err) => {
+            console.error("Failed to deduct credit:", err);
+            this.toast.show('Could not verify credit usage. Upload cancelled.', 'error');
+            this.discardImage(); // Rollback if credit deduction fails
+          }
+        });
       },
       error: (err) => {
         console.error('Cloudinary API Error:', err);
@@ -447,7 +483,7 @@ export class TbiComponent implements OnInit {
     this.rebuildImageUrls(false);
   }
 
-  // --- IMAGE DOWNLOAD ---
+  // --- IMAGE DOWNLOAD & SAVE ---
 
   downloadImage(): void {
     const canvas = document.createElement('canvas');
@@ -502,11 +538,8 @@ export class TbiComponent implements OnInit {
     bgImg.src = this.backgroundImageUrl;
   }
 
-
-//upload the image
-
+  // --- UPDATED saveImage METHOD (NO CREDIT LOGIC) ---
   saveImage(): void {
-    // 1. Create a canvas, just like in the download function
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
     if (!ctx || !this.backgroundImageUrl) {
@@ -514,7 +547,6 @@ export class TbiComponent implements OnInit {
       return;
     }
 
-    // This logic is copied from your downloadImage() function
     const bgImg = new Image();
     bgImg.crossOrigin = 'anonymous';
     bgImg.onload = () => {
@@ -528,7 +560,6 @@ export class TbiComponent implements OnInit {
       ctx.drawImage(bgImg, 0, 0, canvas.width, canvas.height);
       ctx.filter = 'none';
 
-      // Draw text layers
       this.textLayers.forEach((layer) => {
         const scale = canvas.width / previewEl.clientWidth;
         ctx.font = `${layer.isItalic ? 'italic ' : ''}${layer.isBold ? '900 ' : '400 '}${layer.fontSize * scale}px ${layer.fontFamily}`;
@@ -548,48 +579,38 @@ export class TbiComponent implements OnInit {
         ctx.restore();
       });
 
-      // Draw foreground image
       const fgImg = new Image();
       fgImg.crossOrigin = 'anonymous';
       fgImg.onload = () => {
         ctx.globalAlpha = 1;
         ctx.drawImage(fgImg, 0, 0, canvas.width, canvas.height);
 
-        // 2. Convert the final canvas to a Blob
         canvas.toBlob((blob) => {
           if (!blob) {
             console.error('Failed to create blob from canvas.');
             return;
           }
 
-          // 3. Use the Blob to upload the image via your service
           const formData = new FormData();
-          // Append the blob as a file with the user-defined filename
           formData.append('image', blob, `${this.fileName || 'Cool-TBI'}.png`);
-          formData.append('description', 'Created with the TBI tool'); // Or any other description
+          formData.append('description', 'Created with the TBI tool');
 
-          console.log('Uploading final image...');
-          // This assumes you have an 'imageService' injected
-          
+          // This now only saves to the gallery, no credit logic here.
           this.imageService.uploadImage(formData).subscribe({
             next: (response) => {
-              this.toast.show('Image uploaded successfully!', 'success');
-              console.log('File uploaded successfully', response);
-              // Add any success message for the user
+              this.toast.show('Image saved to gallery!', 'success');
             },
             error: (error) => {
-              this.toast.show('Error uploading file:', 'error');
-              console.error('Error uploading file:', error);
+              this.toast.show('Error saving image.', 'error');
+              console.error('Error saving image to gallery:', error);
             }
           });
           
-        }, 'image/png', 1.0); // Use PNG for high quality
+        }, 'image/png', 1.0);
       };
-      // Make sure to handle the case where there is no foreground image
       if (this.foregroundImageUrl) {
         fgImg.src = this.foregroundImageUrl;
       } else {
-        // If there's no foreground, trigger the blob conversion directly
         fgImg.onload(new Event('load'));
       }
     };
@@ -649,4 +670,7 @@ export class TbiComponent implements OnInit {
     },
   ];
 
+
+
 }
+

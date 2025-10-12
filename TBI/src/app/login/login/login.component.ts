@@ -5,7 +5,6 @@ import {
   LoginPopupState,
 } from '../../services/login-pop-up.service';
 import { AuthService } from '../auth-service.service';
-import { User, UserRole } from '../user.model';
 import { ToasterService } from './../../services/toaster.service';
 
 @Component({
@@ -37,7 +36,6 @@ export class LoginComponent implements OnInit {
     this.loginPopupService.loginPopupState$.subscribe(
       (state: LoginPopupState) => {
         this.showPopup.set(state.isOpen);
-        // When the popup opens, set the view to either Sign In or Sign Up
         if (state.isOpen) {
           this.isSignUp = state.isSignUp;
         }
@@ -52,19 +50,12 @@ export class LoginComponent implements OnInit {
     });
   }
 
-  /**
-   * Toggles the view between the Sign In and Sign Up forms.
-   */
   toggleForm() {
     this.isSignUp = !this.isSignUp;
   }
 
-  /**
-   * Closes the popup and resets all form fields and states.
-   */
   closePopup() {
     this.loginPopupService.close();
-    // Reset state after a short delay to allow for closing animation
     setTimeout(() => {
       this.isSignUp = false;
       this.isForgotPassword = false;
@@ -75,45 +66,32 @@ export class LoginComponent implements OnInit {
     }, 300);
   }
 
-  // --- Authentication Methods ---
+  // --- AUTHENTICATION METHODS (SIMPLIFIED) ---
 
   signInWithEmail(event: Event) {
     event.preventDefault();
     this.authService
       .signIn(this.email, this.password)
-      .then((res) => {
-        this.router.navigate(['/home']).then(() => {
-          window.location.reload(); // Refresh after navigation
-        });
+      .then(() => {
+        // The service's authState observer handles the user state.
+        // We just navigate and reload to ensure all guards and resolvers get the latest data.
+        this.router.navigate(['/home']).then(() => window.location.reload());
       })
       .catch((err) => {
-
         let errorMessage = 'An unexpected error occurred. Please try again.';
-
-        // Check for specific Firebase authentication error codes
         if (err.code) {
           switch (err.code) {
             case 'auth/invalid-credential':
-              errorMessage = 'Invalid Credentials';
-              break;
             case 'auth/user-not-found':
-              errorMessage = 'No account found with this email';
-              break;
             case 'auth/wrong-password':
-              // This is often covered by 'auth/invalid-credential', but can occur
-              errorMessage = 'Invalid Credentials';
-              break;
             case 'auth/invalid-email':
               errorMessage = 'Invalid Credentials';
               break;
             case 'auth/too-many-requests':
-              errorMessage =
-                'Too many failed login attempts. Try again later';
+              errorMessage = 'Too many failed login attempts. Try again later';
               break;
           }
         }
-
-        // Use your Toast service to show the user-friendly error message
         this.Toast.show(errorMessage, 'error');
       });
   }
@@ -123,41 +101,16 @@ export class LoginComponent implements OnInit {
     this.authService
       .signUp(this.email, this.password)
       .then((res) => {
-        const user = res.user;
-        if (user) {
-          user
-            .updateProfile({ displayName: this.displayName })
-            .then(() => user.reload())
-            .then(() => {
-              this.authService.getCurrentUser().subscribe((updatedUser) => {
-                if (updatedUser) {
-                  const mappedUser: User = {
-                    uid: updatedUser.uid,
-                    email: updatedUser.email,
-                    displayName: updatedUser.displayName,
-                    photoURL: updatedUser.photoURL,
-                    emailVerified: updatedUser.emailVerified,
-                    phoneNumber: updatedUser.phoneNumber,
-                    isAnonymous: updatedUser.isAnonymous,
-                    role: UserRole.USER, // New users always get 'user' role
-                    metadata: {
-                      creationTime: updatedUser.metadata.creationTime!,
-                      lastSignInTime: updatedUser.metadata.lastSignInTime!,
-                    },
-                    refreshToken: updatedUser.refreshToken,
-                  };
-                  this.authService.setCurrentUser(mappedUser);
-                }
-                this.router.navigate(['/home']);
-                window.location.reload(); // Refresh after navigation
-              });
-            });
-        }
+        // After sign-up, just update the profile. The authState observer will handle the rest.
+        return res.user?.updateProfile({ displayName: this.displayName });
+      })
+      .then(() => {
+        this.router.navigate(['/home']).then(() => window.location.reload());
       })
       .catch((err) => {
         if (err.code === "auth/email-already-in-use") {
           this.Toast.show('Email already in use.','error');
-        }else{
+        } else {
           this.Toast.show('Error signing up. Please try again.','error');
         }
       });
@@ -167,29 +120,9 @@ export class LoginComponent implements OnInit {
     event.preventDefault();
     this.authService
       .googleSignIn()
-      .then((res) => {
-        this.authService.getCurrentUser().subscribe((user) => {
-          if (user) {
-            const mappedUser: User = {
-              uid: user.uid,
-              email: user.email,
-              displayName: user.displayName,
-              photoURL: user.photoURL,
-              emailVerified: user.emailVerified,
-              phoneNumber: user.phoneNumber,
-              isAnonymous: user.isAnonymous,
-              role: UserRole.USER, // Google login users get 'user' role
-              metadata: {
-                creationTime: user.metadata.creationTime!,
-                lastSignInTime: user.metadata.lastSignInTime!,
-              },
-              refreshToken: user.refreshToken,
-            };
-            this.authService.setCurrentUser(mappedUser);
-          }
-        });
-        this.router.navigate(['/home']);
-        window.location.reload(); // Refresh after navigation
+      .then(() => {
+        // Logic is now centralized in AuthService, just navigate and reload.
+        this.router.navigate(['/home']).then(() => window.location.reload());
       })
       .catch((err) => this.Toast.show('Error signing in with Google.','error'));
   }
@@ -198,29 +131,9 @@ export class LoginComponent implements OnInit {
     event.preventDefault();
     this.authService
       .githubSignIn()
-      .then((res) => {
-        this.authService.getCurrentUser().subscribe((user) => {
-          if (user) {
-            const mappedUser: User = {
-              uid: user.uid,
-              email: user.email,
-              displayName: user.displayName,
-              photoURL: user.photoURL,
-              emailVerified: user.emailVerified,
-              phoneNumber: user.phoneNumber,
-              isAnonymous: user.isAnonymous,
-              role: UserRole.USER, // GitHub login users get 'user' role
-              metadata: {
-                creationTime: user.metadata.creationTime!,
-                lastSignInTime: user.metadata.lastSignInTime!,
-              },
-              refreshToken: user.refreshToken,
-            };
-            this.authService.setCurrentUser(mappedUser);
-          }
-        });
-        this.router.navigate(['/home']);
-        window.location.reload(); // Refresh after navigation
+      .then(() => {
+        // Logic is now centralized in AuthService, just navigate and reload.
+        this.router.navigate(['/home']).then(() => window.location.reload());
       })
       .catch((err) => this.Toast.show('Error signing in with GitHub.','error'));
   }
@@ -228,7 +141,6 @@ export class LoginComponent implements OnInit {
   resetPassword(event: Event) {
     event.preventDefault();
     if (!this.resetEmail) {
-      // Use resetEmail for the forgot password form
       alert('Please enter your email address to reset your password.');
       return;
     }
@@ -236,8 +148,9 @@ export class LoginComponent implements OnInit {
       .resetPassword(this.resetEmail)
       .then(() => {
         alert('Password reset email sent!');
-        this.isForgotPassword = false; // Return to sign-in view
+        this.isForgotPassword = false;
       })
       .catch((err: any) => console.error('Reset Error:', err));
   }
 }
+

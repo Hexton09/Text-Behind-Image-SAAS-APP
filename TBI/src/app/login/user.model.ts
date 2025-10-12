@@ -10,8 +10,12 @@ export interface User {
   displayName: string | null;
   photoURL: string | null;
   emailVerified: boolean;
-  role: UserRole; // Using the enum for role
-  
+  role: UserRole;
+
+  // --- NEW PROPERTIES TO MATCH BACKEND ---
+  credits: number;
+  lastCreditReset: string; // Stays as string for easy JSON parsing
+
   // --- Existing Properties ---
   phoneNumber: string | null;
   isAnonymous: boolean;

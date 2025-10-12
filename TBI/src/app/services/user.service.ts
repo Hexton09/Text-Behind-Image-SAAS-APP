@@ -11,6 +11,11 @@ export class UserService {
 
   constructor(private http: HttpClient) { }
 
+  // --- NEW METHOD: Get the current user's full profile from your backend ---
+  getMe(): Observable<User> {
+    return this.http.get<User>(`${this.apiUrl}/me`);
+  }
+
   // Get all users
   getAllUsers(): Observable<User[]> {
     return this.http.get<User[]>(this.apiUrl);
@@ -20,4 +25,10 @@ export class UserService {
   setUserRole(uid: string, role: 'superadmin' | 'admin' | 'user'): Observable<any> {
     return this.http.post(`${this.apiUrl}/set-role`, { uid, role });
   }
+  
+  // Deduct one credit from the current user
+  deductCredit(): Observable<{ credits: number }> {
+    return this.http.post<{ credits: number }>(`${this.apiUrl}/use-credit`, {});
+  }
 }
+

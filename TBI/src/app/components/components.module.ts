@@ -7,6 +7,7 @@ import { ComponentsRoutingModule } from './components-routing.module';
 import { ImageStorageComponent } from './image-storage/image-storage.component';
 import { TbiComponent } from './tbi/tbi.component';
 import { UserListComponent } from './user-list/user-list.component';
+import { PaymentModule } from '../payment/payment.module';
 
 @NgModule({
   declarations: [TbiComponent,ImageStorageComponent,UserListComponent,AdminComponent],
@@ -14,6 +15,7 @@ import { UserListComponent } from './user-list/user-list.component';
     FormsModule,
     CommonModule,
     ComponentsRoutingModule,
+PaymentModule,
     MatTabsModule],
   exports: [TbiComponent, ImageStorageComponent,AdminComponent],
 })
