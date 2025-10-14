@@ -8,7 +8,7 @@
     <div class=" bg-white rounded-2xl transition-all">
 
       <div class="bg-white pb-3 flex justify-between items-center mb-2 transition-all">
-        <div class="flex gap-2 w-[50%] bg-gray-100 p-2 rounded-lg">
+        <div class="flex gap-2 w-[50%] bg-gray-100 p-2 rounded-lg ">
           <input type="text" [(ngModel)]="searchTerm" (keyup.enter)="onSearch()" placeholder="Search by name or tag..."
             class="w-full px-4 py-1.5 bg-white border text-[15px] border-[#c8c8c8] rounded-lg focus:ring-none focus:outline-none focus:border-[#333] transition-colors text-gray-900 placeholder-gray-400">
           <button (click)="onSearch()"
@@ -28,7 +28,7 @@
 
         <div class="flex items-center border border-gray-200 rounded-lg p-1 bg-gray-100">
           <button (click)="setViewMode('list')"
-            [ngClass]="{'bg-white shadow': viewMode === 'list', 'text-gray-500 hover:text-gray-800': viewMode !== 'list'}"
+            [ngClass]="{'bg-white shadow': viewMode === 'list', 'text-[#888] hover:text-[#444]': viewMode !== 'list'}"
             class="p-1.5 rounded-md transition-all cursor-pointer" title="List View">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
               xmlns="http://www.w3.org/2000/svg">
@@ -36,7 +36,7 @@
             </svg>
           </button>
           <button (click)="setViewMode('grid')"
-            [ngClass]="{'bg-white shadow': viewMode === 'grid', 'text-gray-500 hover:text-gray-800': viewMode !== 'grid'}"
+            [ngClass]="{'bg-white shadow': viewMode === 'grid', 'text-[#888] hover:text-[#444]': viewMode !== 'grid'}"
             class="p-1.5 rounded-md transition-all cursor-pointer" title="Grid View">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
               xmlns="http://www.w3.org/2000/svg">

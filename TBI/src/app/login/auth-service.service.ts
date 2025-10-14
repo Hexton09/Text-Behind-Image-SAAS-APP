@@ -43,7 +43,7 @@ export class AuthService {
                 phoneNumber: firebaseUser.phoneNumber,
                 isAnonymous: firebaseUser.isAnonymous,
                 role: role,
-                credits: backendUser?.credits ?? 0,
+                credits: backendUser?.credits ?? 4,
                 lastCreditReset:
                   backendUser?.lastCreditReset ??
                   new Date().toISOString(),

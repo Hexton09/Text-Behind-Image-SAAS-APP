@@ -1,4 +1,6 @@
-<div class="bg-white border border-gray-200 rounded-2xl shadow-2xl p-8 max-w-5xl w-full mx-4 relative">
+<div
+    [ngClass]="{'': route.url === '/payment', 'bg-white border border-gray-200 rounded-2xl shadow-2xl p-8 max-w-5xl w-full mx-4 relative': route.url !== '/payment'}">
+
     <button (click)="closePopup()"
         class="absolute top-4 right-4 bg-gray-50 hover:bg-gray-300 cursor-pointer p-2 rounded-full z-10">
         <img src="cross.svg" alt="close" class="w-5 h-5" />
@@ -8,7 +10,8 @@
         <div class="flex flex-row items-end justify-between w-full mb-18">
             <div class="flex flex-col  items-start justify-center w-[60%]">
                 <h2 class="text-3xl font-extrabold text-[#444] mb-2 ">Plans & Pricing</h2>
-                <p class="text-[#666] text-start  text-xs">Your free daily credits have been used. Upgrade to a premium plan
+                <p class="text-[#666] text-start  text-xs">Your free daily credits have been used. Upgrade to a premium
+                    plan
                     for
                     more
                     credits and exclusive features, or wait until tomorrow for your free credits to refresh.</p>
@@ -30,15 +33,17 @@
                 <label for="billing-toggle"
                     class="flex-1 text-center py-1.5 rounded-full cursor-pointer z-10 font-semibold transition-colors duration-300"
                     [ngClass]="{'text-indigo-600': isYearly, 'text-gray-500': !isYearly}">Yearly</label>
-            </div></div>
+            </div>
+        </div>
 
 
-        
+
 
 
         <div class="w-full grid grid-cols-1 md:grid-cols-3 gap-6">
 
-            <div class="flex flex-col bg-white border-2 border-indigo-200 rounded-xl p-6 shadow-lg hover:scale-105 transition-transform duration-300">
+            <div
+                class="flex flex-col bg-white border-2 border-indigo-200 rounded-xl p-6 shadow-lg hover:scale-105 transition-transform duration-300">
                 <h3 class="text-xl font-extrabold text-[#444]">Free Plan</h3>
                 <p class="text-[#666] mt-1 mb-4 text-sm">Perfect for getting started</p>
                 <p class="text-4xl font-extrabold text-[#444] mb-4">Free</p>
@@ -142,7 +147,8 @@
                     to Premium</button>
             </div>
 
-            <div class="flex flex-col bg-gray-100 border border-gray-200 rounded-xl p-6 shadow-lg text-gray-500 hover:scale-105 transition-transform duration-300">
+            <div
+                class="flex flex-col bg-gray-100 border border-gray-200 rounded-xl p-6 shadow-lg text-gray-500 hover:scale-105 transition-transform duration-300">
                 <h3 class="text-xl font-extrabold text-[#888]">Super Saving</h3>
                 <p class="text-[#888] mt-1 mb-4 text-sm">Carry unused credits to next month</p>
                 <div class="flex-grow flex flex-col items-center justify-center">

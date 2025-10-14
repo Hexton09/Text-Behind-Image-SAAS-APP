@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { SubscriptionService } from '../subscription.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-subscription',
@@ -16,7 +17,7 @@ export class SubscriptionComponent {
   premiumBillingCycle = '/month';
   premiumCredits = 20;
 
-  constructor(private subscriptionService: SubscriptionService) {
+  constructor(private subscriptionService: SubscriptionService, public route: Router) {
     this.subscriptionService.creditExhaustedPopup$.subscribe(
       show => this.showCreditExhaustedPopup = show
     );
